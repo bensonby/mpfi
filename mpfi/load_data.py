@@ -10,28 +10,28 @@ from .config_default import (
     default_config,
     default_config_str,
 )
+CONFIG_FILE = 'mpfi_config.py'
 
 def _load_config():
-    try_file = Path('mpfi-config.py')
+    try_file = Path(CONFIG_FILE)
     if try_file.exists():
-        spec = importlib.util.spec_from_file_location('dummy-name', 'mpfi-config.py')
+        spec = importlib.util.spec_from_file_location('dummy-name',CONFIG_FILE)
         custom_config = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(custom_config)
-        print('Config file mpfi-config.py found.')
+        print('Config file {} found.'.format(CONFIG_FILE))
         return custom_config.config
-    print('Config file mpfi-config.py not found in current directory. Falling back to default config.')
+    print('Config file {} not found in current directory. Falling back to default config.'.format(CONFIG_FILE))
     print('To generate a config file for further edit, run `mpfi.generate_config()`')
     return default_config
 
 def generate_config():
-    # TODO: check if file exist
-    try_file = Path('mpfi-config.py')
+    try_file = Path(CONFIG_FILE)
     if try_file.exists():
-        print('Aborted. File mpfi-config.py already existed')
-    f = open('mpfi-config.py', 'w')
+        print('Aborted. File {} already existed'.format(CONFIG_FILE))
+    f = open(CONFIG_FILE, 'w')
     f.write(default_config_str)
     f.close()
-    print('mpfi-config.py created. Please go ahead and edit the file.')
+    print('{} created. Please go ahead and edit the file.'.format(CONFIG_FILE))
 
 def _get_files_from_folder(folder, file_pattern):
     return [Path(p) for p in glob(folder + file_pattern)]
@@ -87,7 +87,7 @@ def load_all(containing_text, file_pattern=None):
     if folder_name is None:
         print('No folder matching the criteria is found. Your criteria:')
         print(containing_text)
-        print('Folders available (defined in mpfi-config.py): ')
+        print('Folders available (defined in {}): '.format(CONFIG_FILE))
         print(config['MPF_FOLDERS'])
         return
     print('Reading from {}, file_pattern {}'.format(folder_name, file_pattern))
@@ -132,7 +132,7 @@ def load(filename, containing_text=None, folder=None):
             return _read_single_mpf(config, full_filename, prod_name)
 
     print('model point file not found: {}'.format(filename))
-    print('Folders available (defined in mpfi-config.py): ')
+    print('Folders available (defined in {}): '.format(CONFIG_FILE))
     print(config['MPF_FOLDERS'])
     return None
 
@@ -156,6 +156,6 @@ def load_fac(filename, folder=None):
             return _read_fac(full_filename)
 
     print('fac file not found: {}'.format(filename))
-    print('Folders available (defined in mpfi-config.py): ')
+    print('Folders available (defined in {}): '.format(CONFIG_FILE))
     print(config['FAC_FOLDERS'])
     return None
