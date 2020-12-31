@@ -74,17 +74,17 @@ def _read_fac(full_filename):
         index_col=list(range(1, key_column_count)),
         ).dropna(how='all')
 
-def load_all(containing_text, file_pattern=None):
+def load_all(file_pattern=None, folder_filter=None):
     config = _load_config()
     if file_pattern is None:
         file_pattern = '*.' + config['MPF_EXTENSION']
     folder_name = None
     for folder in config['MPF_FOLDERS']:
-        if containing_text is not None:
-            if type(containing_text) is list:
-                str_list = containing_text
+        if folder_filter is not None:
+            if type(folder_filter) is list:
+                str_list = folder_filter
             else:
-                str_list = [containing_text]
+                str_list = [folder_filter]
             not_found = [1 for s in str_list if folder.find(s) == -1]
             if len(not_found) > 0:
                 continue
@@ -92,7 +92,7 @@ def load_all(containing_text, file_pattern=None):
             break
     if folder_name is None:
         print('No folder matching the criteria is found. Your criteria:')
-        print(containing_text)
+        print(folder_filter)
         print('Folders available (defined in {}): '.format(CONFIG_FILE))
         print(config['MPF_FOLDERS'])
         return
