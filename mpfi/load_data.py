@@ -37,6 +37,15 @@ def _get_files_from_folder(folder, file_pattern):
     return [Path(p) for p in glob(folder + file_pattern)]
 
 def _read_single_mpf(config, full_filename, prod_name):
+    if config['FILE_NAME_COLUMN']:
+        extra_columns = {
+            config['PROD_NAME_COLUMN']: prod_name,
+            config['FILE_NAME_COLUMN']: full_filename,
+        }
+    else:
+        extra_columns = {
+            config['PROD_NAME_COLUMN']: prod_name,
+        }
     meta = mpf_meta(full_filename)
     return pd.read_csv(
         full_filename,
@@ -45,10 +54,7 @@ def _read_single_mpf(config, full_filename, prod_name):
         index_col=config['MPF_INDEX_COLUMNS'],
         error_bad_lines=False,
         nrows=meta['rows']
-        ).dropna(how='all').assign(**{
-            config['PROD_NAME_COLUMN']: prod_name,
-            config['FILE_NAME_COLUMN']: full_filename,
-        })
+        ).dropna(how='all').assign(**extra_columns)
 
 def _read_fac(full_filename):
     header_row = find_fac_header_row(full_filename)

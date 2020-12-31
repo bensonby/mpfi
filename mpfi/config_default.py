@@ -22,7 +22,10 @@ default_config = {
     'FAC_EXTENSION': 'fac', # without the dot
 
     'PROD_NAME_COLUMN': '_PROD_NAME', # name of the additional column used for storing the MPF filename
-    'FILE_NAME_COLUMN': '_FILE_NAME', # name of the additional column used for storing the full file path
+
+    # name of the additional column used for storing the full file path
+    # set this to None for not creating this column
+    'FILE_NAME_COLUMN': '_FILE_NAME',
 
     'MPF_COLUMN_SPECS': {
         # these will be used to override any column types specified in the MPF
@@ -71,7 +74,10 @@ config = {
     'FAC_EXTENSION': 'fac', # without the dot
 
     'PROD_NAME_COLUMN': '_PROD_NAME', # name of the additional column used for storing the MPF filename
-    'FILE_NAME_COLUMN': '_FILE_NAME', # name of the additional column used for storing the full file path
+
+    # name of the additional column used for storing the full file path
+    # set this to None for not creating this column
+    'FILE_NAME_COLUMN': '_FILE_NAME',
 
     'MPF_COLUMN_SPECS': {
         # these will be used to override any column types specified in the MPF
