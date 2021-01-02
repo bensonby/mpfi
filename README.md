@@ -187,6 +187,10 @@ To ease the maintenance difficulty posed by the above issues, I wrote this libra
 
 Using Python with the Pandas library is one of the best ways to manage and create model point files, thanks to the modern Python features and syntax with great community support, and the ability to handle large amount of data with Pandas.
 
+## Test
+
+Test using [pytest](https://docs.pytest.org/) with [pytest-mock](https://github.com/pytest-dev/pytest-mock)
+
 ## License
 
 This project is licensed under [MIT License](https://en.wikipedia.org/wiki/MIT_License).
