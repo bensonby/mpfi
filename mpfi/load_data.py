@@ -74,73 +74,59 @@ def _read_fac(full_filename):
         index_col=list(range(1, key_column_count)),
         ).dropna(how='all')
 
-def load_all(file_pattern=None, folder_filter=None):
-    config = _load_config()
+def _get_file_pattern(file_pattern):
     if file_pattern is None:
-        file_pattern = '*.' + config['MPF_EXTENSION']
+        return '*.' + config['MPF_EXTENSION']
+    if type(file_pattern) is list:
+        return file_pattern
+    if type(file_pattern) is not str:
+        print('Invalid file_pattern parameter. None, list or str is expected. {} given.'.format(type(file_pattern)))
+        return None
+    ext_pos = file_pattern.lower().find('.' + config['MPF_EXTENSION'].lower())
+    if ext_pos == -1:
+        return file_pattern + '.' + config['MPF_EXTENSION']
+    return file_pattern
+
+def _get_folder(folder_filter, folder=None):
+    if folder is not None:
+        return folder
     folder_name = None
-    for folder in config['MPF_FOLDERS']:
-        if folder_filter is not None:
-            if type(folder_filter) is list:
-                str_list = folder_filter
-            else:
-                str_list = [folder_filter]
-            not_found = [1 for s in str_list if folder.find(s) == -1]
-            if len(not_found) > 0:
-                continue
-            folder_name = folder
+    for path in config['MPF_FOLDERS']:
+        if folder_filter is None:
+            folder_name = path
             break
+        if type(folder_filter) is list:
+            str_list = folder_filter
+        elif type(folder_filter) is not str:
+            print('Invalid folder_filter parameter. None, list or str is expected. {} given.'.format(type(folder_filter)))
+            return None
+        else:
+            str_list = [folder_filter]
+        not_found = [1 for s in str_list if path.find(s) == -1]
+        if len(not_found) > 0:
+            continue
+        folder_name = path
+        break
     if folder_name is None:
         print('No folder matching the criteria is found. Your criteria:')
         print(folder_filter)
         print('Folders available (defined in {}): '.format(CONFIG_FILE))
         print(config['MPF_FOLDERS'])
-        return
-    print('Reading from {}, file_pattern {}'.format(folder_name, file_pattern))
-    files = _get_files_from_folder(folder_name, file_pattern)
+        return None
+    return folder_name
+
+def load(file_pattern=None, folder_filter=None, folder=None):
+    config = _load_config()
+    file_pattern = _get_file_pattern(file_pattern)
+    folder = _get_folder(folder_filter, folder)
+    print('Reading from {}, file_pattern {}'.format(folder, file_pattern))
+    files = _get_files_from_folder(folder, file_pattern)
     if len(files) == 0:
         print('No model point files match your selection criteria.')
         return
     df_from_each_file = (_read_single_mpf(config, str(f), f.stem) for f in files)
     concatenated_df = pd.concat(df_from_each_file, ignore_index=True)
     return concatenated_df
-
-'''
-filename: allow either with .PRO or without; extension defined in mpfi-config.py
-folder: to be read from .env
-'''
-def load(filename, containing_text=None, folder=None):
-    config = _load_config()
-    ext_pos = filename.find('.' + config['MPF_EXTENSION'])
-    if ext_pos > -1: # has extension specified
-        prod_name = filename[0:ext_pos]
-    else:
-        prod_name = filename
-        filename = prod_name + '.' + config['MPF_EXTENSION']
-
-    if folder is not None:
-        full_filename = folder + filename
-        return _read_single_mpf(config, full_filename, prod_name)
-
-    for folder in config['MPF_FOLDERS']:
-        full_filename = folder + filename
-        if containing_text is not None:
-            if type(containing_text) is list:
-                str_list = containing_text
-            else:
-                str_list = [containing_text]
-            not_found = [1 for s in str_list if full_filename.find(s) == -1]
-            if len(not_found) > 0:
-                continue
-        try_file = Path(full_filename)
-        if try_file.exists() and not try_file.is_dir():
-            print('Reading from {}'.format(full_filename))
-            return _read_single_mpf(config, full_filename, prod_name)
-
-    print('model point file not found: {}'.format(filename))
-    print('Folders available (defined in {}): '.format(CONFIG_FILE))
-    print(config['MPF_FOLDERS'])
-    return None
 
 def load_fac(filename, folder=None):
     config = _load_config()

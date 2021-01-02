@@ -2,7 +2,6 @@
 
 from .load_data import (
     load,
-    load_all,
     load_fac,
     generate_config,
 )
