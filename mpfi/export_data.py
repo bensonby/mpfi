@@ -6,6 +6,8 @@ from .load_data import (
 )
 
 def _get_mpf_columns(df, opt, config):
+    if opt.get('include_only_columns', None) is not None:
+        return opt['include_only_columns']
     columns = [
         c for c in list(df.columns)
         if c[0] != '_' and c.upper() == c

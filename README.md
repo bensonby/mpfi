@@ -66,6 +66,10 @@ mpfi.export(df, 'all-model-points', {
     'write_header': False,
     'include_columns': ['_FILE_NAME'],
     'exclude_columns': ['SPCODE', 'AGE_AT_ENTRY'],
+
+    # if 'include_only_columns' is provided, only strictly this list will be exported
+    # i.e. any settings from include_columns and exclude_columns are ignored
+    # 'include_only_columns': ['SPCODE', '_PROD_NAME', 'AGE_AT_ENTRY']
 })
 ```
 
