@@ -21,12 +21,12 @@ def _to_prophet_type(dtype, series):
         return 'I'
     if dtype in ['float', 'float64']:
         return 'N'
-    if dtype in [np.dtype('object'), 'str', 'string', 'category', 'object']:
+    if dtype in ['str', 'string', 'category', 'object']:
         return 'T{}'.format(series.str.len().max())
-    raise Exception('Unhandled dtype: {}, type is {}'.format(dtype, type(dtype)))
+    raise Exception('Unhandled dtype: {}, type is {}, series is {}'.format(dtype, type(dtype), series.name))
 
 def _get_column_types(df, column_names):
-    return [_to_prophet_type(df[c].dtype, df[c]) for c in column_names]
+    return [str(_to_prophet_type(df[c].dtype, df[c])) for c in column_names]
 
 def export(data, folder, options={}):
     default_options = {
