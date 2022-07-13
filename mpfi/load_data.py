@@ -43,6 +43,7 @@ def _read_single_mpf(config, full_filename, prod_name):
         skiprows=meta['header_row'],
         dtype={**meta['column_specs'], **config['MPF_COLUMN_SPECS']},
         index_col=config['MPF_INDEX_COLUMNS'],
+        encoding='latin-1', # to prevent error while reading garbage footer lines
         error_bad_lines=False,
         nrows=meta['rows']
         ).dropna(how='all').assign(**{
