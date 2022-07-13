@@ -53,6 +53,8 @@ def mpf_meta(filename):
                 break
             else:
                 n += 1
+        if result['rows'] == -1:
+            result['rows'] = n - result['header_row'] + 1
 
     if result['header_row'] == -1 or result['rows'] == -1:
         print('Malformed model point file format in: ' + filename)
