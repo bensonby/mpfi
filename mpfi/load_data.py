@@ -44,7 +44,7 @@ def _read_single_mpf(config, full_filename, prod_name):
         dtype={**meta['column_specs'], **config['MPF_COLUMN_SPECS']},
         index_col=config['MPF_INDEX_COLUMNS'],
         encoding='latin-1', # to prevent error while reading garbage footer lines
-        error_bad_lines=False,
+        on_bad_lines='warn',
         nrows=meta['rows']
         ).dropna(how='all').assign(**{
             config['PROD_NAME_COLUMN']: prod_name,
