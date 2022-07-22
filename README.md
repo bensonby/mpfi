@@ -173,6 +173,8 @@ import mpfi
 my_data = mpfi.load_fac('prem_rate.fac') # a pandas DataFrame object
 ```
 
+The file extension for the fac file is defined in the config as `FAC_EXTENSION` (default `fac`), and the folders to be searched for are defined in `FAC_FOLDERS` (default `['./', 'TABLES/', 'example/']`)
+
 ## Motivation
 
 In system design, the same type of data should be stored together, in one single file or one single database table. This can ensure consistency and facilitate indexing, searching and manipulation of data.

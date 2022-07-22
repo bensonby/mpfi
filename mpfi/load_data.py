@@ -139,11 +139,8 @@ def load(filename, containing_text=None, folder=None):
 
 def load_fac(filename, folder=None):
     config = _load_config()
-    if filename.find('.' + config['MPF_EXTENSION']) > -1:
-        prod_name = filename[0:6]
-    else:
-        prod_name = filename
-        filename = prod_name + '.' + config['MPF_EXTENSION']
+    if filename.find('.' + config['FAC_EXTENSION']) == -1:
+        filename = filename + '.' + config['FAC_EXTENSION']
 
     if folder is not None:
         full_filename = folder + filename

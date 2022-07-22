@@ -16,6 +16,7 @@ default_config = {
     'FAC_FOLDERS': [
       './',
       'TABLES/',
+      'example/',
     ],
 
     'MPF_EXTENSION': 'PRO', # without the dot
@@ -65,6 +66,7 @@ config = {
     'FAC_FOLDERS': [
       './',
       'TABLES/',
+      'example/',
     ],
 
     'MPF_EXTENSION': 'PRO', # without the dot
