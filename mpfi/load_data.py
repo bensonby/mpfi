@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PurePath
 from glob import glob
 import importlib.util
 import pandas as pd
@@ -114,11 +114,11 @@ def load(filename, containing_text=None, folder=None):
         filename = prod_name + '.' + config['MPF_EXTENSION']
 
     if folder is not None:
-        full_filename = folder + filename
+        full_filename = str(PurePath(folder, filename))
         return _read_single_mpf(config, full_filename, prod_name)
 
     for folder in config['MPF_FOLDERS']:
-        full_filename = folder + filename
+        full_filename = str(PurePath(folder, filename))
         if containing_text is not None:
             if type(containing_text) is list:
                 str_list = containing_text
@@ -143,11 +143,11 @@ def load_fac(filename, folder=None):
         filename = filename + '.' + config['FAC_EXTENSION']
 
     if folder is not None:
-        full_filename = folder + filename
+        full_filename = PurePath(folder, filename)
         return _read_fac(full_filename)
 
     for folder in config['FAC_FOLDERS']:
-        full_filename = folder + filename
+        full_filename = PurePath(folder, filename)
         try_file = Path(full_filename)
         if try_file.exists() and not try_file.is_dir():
             print('Reading from {}'.format(full_filename))
