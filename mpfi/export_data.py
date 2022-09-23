@@ -49,7 +49,7 @@ def export(data, folder, options={}):
         else:
             os.mkdir(folder)
         for prod_name, rows in df.groupby(config['PROD_NAME_COLUMN']):
-            filename = '{}\\{}.{}'.format(folder, prod_name, config['MPF_EXTENSION'])
+            filename = '{}/{}.{}'.format(folder, prod_name, config['MPF_EXTENSION'])
             with open(filename, 'w') as file_buffer:
                 if opt['write_header']:
                     file_buffer.write('OUTPUT_FORMAT, mpfi\n')
