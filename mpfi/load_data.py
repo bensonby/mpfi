@@ -36,40 +36,46 @@ def generate_config():
 def _get_files_from_folder(folder, file_pattern):
     return [Path(p) for p in glob(folder + file_pattern)]
 
-def _read_single_mpf(config, full_filename, prod_name):
+def _read_single_mpf(config, full_filename, prod_name, read_csv_options=None):
     meta = mpf_meta(full_filename)
-    return pd.read_csv(
-        full_filename,
-        skiprows=meta['header_row'],
-        dtype={**meta['column_specs'], **config['MPF_COLUMN_SPECS']},
-        index_col=config['MPF_INDEX_COLUMNS'],
-        encoding='latin-1', # to prevent error while reading garbage footer lines
-        on_bad_lines='warn',
-        nrows=meta['rows']
-        ).dropna(how='all').assign(**{
-            config['PROD_NAME_COLUMN']: prod_name,
-            config['FILE_NAME_COLUMN']: full_filename,
-        })
+    options = {
+        'skiprows': meta['header_row'],
+        'dtype': {**meta['column_specs'], **config['MPF_COLUMN_SPECS']},
+        'index_col': config['MPF_INDEX_COLUMNS'],
+        'encoding': 'latin-1', # to prevent error while reading garbage footer lines
+        'on_bad_lines': 'warn',
+        'nrows': meta['rows'],
+    }
+    if read_csv_options is not None:
+        options.update(read_csv_options)
+    return pd.read_csv(full_filename, **options).dropna(how='all').assign(**{
+        config['PROD_NAME_COLUMN']: prod_name,
+        config['FILE_NAME_COLUMN']: full_filename,
+    })
 
-def _read_fac(full_filename):
+def _read_fac(full_filename, read_csv_options=None):
     header_row = find_fac_header_row(full_filename)
-    cols = pd.read_csv(
-        full_filename,
-        encoding='latin-1', # There are some strange characters in the start of .fac files..
-        skiprows=header_row,
-        nrows=1,
-        ).columns
+    options = {
+        'encoding': 'latin-1', # There are some strange characters in the start of .fac files..
+        'skiprows': header_row,
+        'nrows': 1,
+    }
+    if read_csv_options is not None:
+        options.update(read_csv_options)
+    cols = pd.read_csv(full_filename, **options).columns
     first_column_type = {cols[0]: pd.CategoricalDtype(['*'])}
     key_column_count = int(cols[0][1:])
-    return pd.read_csv(
-        full_filename,
-        encoding='latin-1', # There are some strange characters in the start of .fac files..
-        skiprows=header_row,
-        dtype=first_column_type,
-        index_col=list(range(1, key_column_count)),
-        ).dropna(how='all')
+    options = {
+        'encoding': 'latin-1', # There are some strange characters in the start of .fac files..
+        'skiprows': header_row,
+        'dtype': first_column_type,
+        'index_col': list(range(1, key_column_count)),
+    }
+    if read_csv_options is not None:
+        options.update(read_csv_options)
+    return pd.read_csv(full_filename, **options).dropna(how='all')
 
-def load_all(containing_text, file_pattern=None):
+def load_all(containing_text, file_pattern=None, read_csv_options=None):
     config = _load_config()
     if file_pattern is None:
         file_pattern = '*.' + config['MPF_EXTENSION']
@@ -96,7 +102,7 @@ def load_all(containing_text, file_pattern=None):
     if len(files) == 0:
         print('No model point files match your selection criteria.')
         return
-    df_from_each_file = (_read_single_mpf(config, str(f), f.stem) for f in files)
+    df_from_each_file = (_read_single_mpf(config, str(f), f.stem, read_csv_options) for f in files)
     concatenated_df = pd.concat(df_from_each_file, ignore_index=True)
     return concatenated_df
 
@@ -104,7 +110,7 @@ def load_all(containing_text, file_pattern=None):
 filename: allow either with .PRO or without; extension defined in mpfi-config.py
 folder: to be read from .env
 '''
-def load(filename, containing_text=None, folder=None):
+def load(filename, containing_text=None, folder=None, read_csv_options=None):
     config = _load_config()
     ext_pos = filename.find('.' + config['MPF_EXTENSION'])
     if ext_pos > -1: # has extension specified
@@ -115,7 +121,7 @@ def load(filename, containing_text=None, folder=None):
 
     if folder is not None:
         full_filename = str(PurePath(folder, filename))
-        return _read_single_mpf(config, full_filename, prod_name)
+        return _read_single_mpf(config, full_filename, prod_name, read_csv_options)
 
     for folder in config['MPF_FOLDERS']:
         full_filename = str(PurePath(folder, filename))
@@ -130,28 +136,28 @@ def load(filename, containing_text=None, folder=None):
         try_file = Path(full_filename)
         if try_file.exists() and not try_file.is_dir():
             print('Reading from {}'.format(full_filename))
-            return _read_single_mpf(config, full_filename, prod_name)
+            return _read_single_mpf(config, full_filename, prod_name, read_csv_options)
 
     print('model point file not found: {}'.format(filename))
     print('Folders available (defined in mpfi-config.py): ')
     print(config['MPF_FOLDERS'])
     return None
 
-def load_fac(filename, folder=None):
+def load_fac(filename, folder=None, read_csv_options=None):
     config = _load_config()
     if filename.find('.' + config['FAC_EXTENSION']) == -1:
         filename = filename + '.' + config['FAC_EXTENSION']
 
     if folder is not None:
         full_filename = PurePath(folder, filename)
-        return _read_fac(full_filename)
+        return _read_fac(full_filename, read_csv_options)
 
     for folder in config['FAC_FOLDERS']:
         full_filename = PurePath(folder, filename)
         try_file = Path(full_filename)
         if try_file.exists() and not try_file.is_dir():
             print('Reading from {}'.format(full_filename))
-            return _read_fac(full_filename)
+            return _read_fac(full_filename, read_csv_options)
 
     print('fac file not found: {}'.format(filename))
     print('Folders available (defined in mpfi-config.py): ')

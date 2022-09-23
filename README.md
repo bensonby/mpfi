@@ -175,6 +175,16 @@ my_data = mpfi.load_fac('prem_rate.fac') # a pandas DataFrame object
 
 The file extension for the fac file is defined in the config as `FAC_EXTENSION` (default `fac`), and the folders to be searched for are defined in `FAC_FOLDERS` (default `['./', 'TABLES/', 'example/']`)
 
+
+### Customization upon reading CSV
+
+You can supply optional argument to the underlying `pandas.read_csv` function in the `load`, `load_all` or `load_fac` function by passing a dictionary to the optional argument `read_csv_option`, e.g.
+
+```python
+import mpfi
+my_data = mpfi.load('C123456', read_csv_options={'usecols': ['ANNUAL_PREM', 'AGE_AT_ENTRY']})
+```
+
 ## Motivation
 
 In system design, the same type of data should be stored together, in one single file or one single database table. This can ensure consistency and facilitate indexing, searching and manipulation of data.
