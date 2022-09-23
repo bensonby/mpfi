@@ -32,10 +32,11 @@ def mpf_meta(filename):
         'column_specs': None,
     }
     variable_types = None
-    n = 0
+    n = -1
     numlines = -1
     with open(filename, 'r', encoding='latin-1') as f:
         for line in f:
+            n += 1
             matching_numlines = re.match(r"^NUMLINES,[\s]*([\d]+)", line)
             matching_formats = re.match(r"^VARIABLE_TYPES,", line)
             if matching_numlines is not None:
@@ -46,10 +47,9 @@ def mpf_meta(filename):
                 result['header_row'] = n # zero-based
                 variable_names = line.split(',')
                 break
-            n += 1
         for line in f:
             if line[0] != '*':
-                result['rows'] = n - result['header_row']
+                result['rows'] = n - result['header_row'] + 1
                 break
             else:
                 n += 1
