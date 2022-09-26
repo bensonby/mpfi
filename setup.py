@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="mpfi",
-    version="0.0.15",
+    version="0.0.16",
     author="Benson Yeung",
     author_email="bensonby@gmail.com",
     description="FIS Prophet Model Point File Inspector and Processor",
