@@ -176,13 +176,21 @@ my_data = mpfi.load_fac('prem_rate.fac') # a pandas DataFrame object
 The file extension for the fac file is defined in the config as `FAC_EXTENSION` (default `fac`), and the folders to be searched for are defined in `FAC_FOLDERS` (default `['./', 'TABLES/', 'example/']`)
 
 
-### Customization upon reading CSV
+### Customization upon reading and saving as CSV
 
-You can supply optional argument to the underlying `pandas.read_csv` function in the `load`, `load_all` or `load_fac` function by passing a dictionary to the optional argument `read_csv_option`, e.g.
+You can supply optional argument to the underlying `pandas.read_csv` function in the `load`, `load_all` or `load_fac` function by passing a dictionary to the optional argument `read_csv_options`, e.g.
 
 ```python
 import mpfi
 my_data = mpfi.load('C123456', read_csv_options={'usecols': ['ANNUAL_PREM', 'AGE_AT_ENTRY']})
+```
+
+The same also applies for `to_csv_options` in `mpfi.export`:
+
+```python
+import mpfi
+my_data = mpfi.load('C123456')
+mpfi.export(my_data, to_csv_options={'sep': '|'})
 ```
 
 ## Motivation

@@ -28,7 +28,7 @@ def _to_prophet_type(dtype, series):
 def _get_column_types(df, column_names):
     return [_to_prophet_type(df[c].dtype, df[c]) for c in column_names]
 
-def export(data, folder, options={}):
+def export(data, folder, options={}, to_csv_options={}):
     default_options = {
         'split_into_prod': True,
         'write_header': True,
@@ -40,6 +40,14 @@ def export(data, folder, options={}):
     df = data.reset_index()
     mpf_columns = _get_mpf_columns(df, opt, config)
     column_types = _get_column_types(df, mpf_columns)
+
+    to_csv_opt = {
+        'index': False,
+        'columns': mpf_columns,
+        'lineterminator': '\n',
+        **to_csv_options,
+    }
+
     if opt['split_into_prod']:
         try_folder = Path(folder)
         if try_folder.exists():
@@ -57,9 +65,7 @@ def export(data, folder, options={}):
                     file_buffer.write('VARIABLE_TYPES,{}\n'.format(','.join(column_types)))
                 rows.to_csv(
                     file_buffer,
-                    index=False,
-                    columns=mpf_columns,
-                    line_terminator='\n',
+                    **to_csv_opt,
                 )
         return
 
@@ -72,6 +78,5 @@ def export(data, folder, options={}):
             return
     df.to_csv(
         filename,
-        index=False,
-        columns = mpf_columns,
+        **to_csv_opt,
     )

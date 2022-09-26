@@ -36,7 +36,7 @@ def generate_config():
 def _get_files_from_folder(folder, file_pattern):
     return [Path(p) for p in glob(folder + file_pattern)]
 
-def _read_single_mpf(config, full_filename, prod_name, read_csv_options=None):
+def _read_single_mpf(config, full_filename, prod_name, read_csv_options={}):
     meta = mpf_meta(full_filename)
     options = {
         'skiprows': meta['header_row'],
@@ -45,23 +45,21 @@ def _read_single_mpf(config, full_filename, prod_name, read_csv_options=None):
         'encoding': 'latin-1', # to prevent error while reading garbage footer lines
         'on_bad_lines': 'warn',
         'nrows': meta['rows'],
+        **read_csv_options,
     }
-    if read_csv_options is not None:
-        options.update(read_csv_options)
     return pd.read_csv(full_filename, **options).dropna(how='all').assign(**{
         config['PROD_NAME_COLUMN']: prod_name,
         config['FILE_NAME_COLUMN']: full_filename,
     })
 
-def _read_fac(full_filename, read_csv_options=None):
+def _read_fac(full_filename, read_csv_options={}):
     header_row = find_fac_header_row(full_filename)
     options = {
         'encoding': 'latin-1', # There are some strange characters in the start of .fac files..
         'skiprows': header_row,
         'nrows': 1,
+        **read_csv_options,
     }
-    if read_csv_options is not None:
-        options.update(read_csv_options)
     cols = pd.read_csv(full_filename, **options).columns
     first_column_type = {cols[0]: pd.CategoricalDtype(['*'])}
     key_column_count = int(cols[0][1:])
@@ -70,12 +68,11 @@ def _read_fac(full_filename, read_csv_options=None):
         'skiprows': header_row,
         'dtype': first_column_type,
         'index_col': list(range(1, key_column_count)),
+        **read_csv_options,
     }
-    if read_csv_options is not None:
-        options.update(read_csv_options)
     return pd.read_csv(full_filename, **options).dropna(how='all')
 
-def load_all(containing_text, file_pattern=None, read_csv_options=None):
+def load_all(containing_text, file_pattern=None, read_csv_options={}):
     config = _load_config()
     if file_pattern is None:
         file_pattern = '*.' + config['MPF_EXTENSION']
@@ -110,7 +107,7 @@ def load_all(containing_text, file_pattern=None, read_csv_options=None):
 filename: allow either with .PRO or without; extension defined in mpfi-config.py
 folder: to be read from .env
 '''
-def load(filename, containing_text=None, folder=None, read_csv_options=None):
+def load(filename, containing_text=None, folder=None, read_csv_options={}):
     config = _load_config()
     ext_pos = filename.find('.' + config['MPF_EXTENSION'])
     if ext_pos > -1: # has extension specified
@@ -143,7 +140,7 @@ def load(filename, containing_text=None, folder=None, read_csv_options=None):
     print(config['MPF_FOLDERS'])
     return None
 
-def load_fac(filename, folder=None, read_csv_options=None):
+def load_fac(filename, folder=None, read_csv_options={}):
     config = _load_config()
     if filename.find('.' + config['FAC_EXTENSION']) == -1:
         filename = filename + '.' + config['FAC_EXTENSION']
