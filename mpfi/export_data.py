@@ -1,9 +1,15 @@
 import os
+import re
+import csv
 from pathlib import Path
 import numpy as np
 from .load_data import (
     _load_config,
 )
+
+def _remove_asterisk_quotes(s):
+    # replace "*" by * for start of data lines in MPF
+    return re.sub(r'^"\*"', '*', s, flags=re.M)
 
 def _get_mpf_columns(df, opt, config):
     columns = [
@@ -45,6 +51,8 @@ def export(data, folder, options={}, to_csv_options={}):
         'index': False,
         'columns': mpf_columns,
         'lineterminator': '\n',
+        'header': False,
+        'quoting': csv.QUOTE_NONNUMERIC,
         **to_csv_options,
     }
 
@@ -57,16 +65,22 @@ def export(data, folder, options={}, to_csv_options={}):
         else:
             os.mkdir(folder)
         for prod_name, rows in df.groupby(config['PROD_NAME_COLUMN']):
+            out_lines = []
+            if opt['write_header']:
+                out_lines.append('OUTPUT_FORMAT, mpfi')
+                out_lines.append(f'NUMLINES, {len(rows)}')
+                types = ','.join(column_types)
+                out_lines.append(f'VARIABLE_TYPES,{types}')
+            out_lines.append(','.join(mpf_columns))
+            data_lines = _remove_asterisk_quotes(
+                rows.to_csv(**to_csv_opt)
+            )
+            out_lines.append(data_lines)
+
             filename = '{}/{}.{}'.format(folder, prod_name, config['MPF_EXTENSION'])
-            with open(filename, 'w') as file_buffer:
-                if opt['write_header']:
-                    file_buffer.write('OUTPUT_FORMAT, mpfi\n')
-                    file_buffer.write('NUMLINES, {}\n'.format(len(rows)))
-                    file_buffer.write('VARIABLE_TYPES,{}\n'.format(','.join(column_types)))
-                rows.to_csv(
-                    file_buffer,
-                    **to_csv_opt,
-                )
+            with open(filename, 'w', newline='\r\n') as f:
+                for l in out_lines:
+                    f.write(l + '\n')
         return
 
     # output to one single file
