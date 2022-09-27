@@ -28,7 +28,7 @@ def _to_prophet_type(dtype, series):
         return 'I'
     if dtype_str in ['float', 'float64']:
         return 'N'
-    if dtype_str in [np.dtype('object'), 'str', 'string', 'category', 'object']:
+    if dtype_str in ['str', 'string', 'category', 'object']:
         return 'T{}'.format(series.str.len().max())
     raise Exception('Unhandled dtype: {}, type is {}'.format(dtype, type(dtype)))
 
