@@ -23,11 +23,12 @@ def _get_mpf_columns(df, opt, config):
     return columns
 
 def _to_prophet_type(dtype, series):
-    if dtype in ['int', 'int32', 'Int32', 'int64']:
+    dtype_str = str(dtype).lower()
+    if dtype_str in ['int', 'int32', 'int64']:
         return 'I'
-    if dtype in ['float', 'float64']:
+    if dtype_str in ['float', 'float64']:
         return 'N'
-    if dtype in [np.dtype('object'), 'str', 'string', 'category', 'object']:
+    if dtype_str in [np.dtype('object'), 'str', 'string', 'category', 'object']:
         return 'T{}'.format(series.str.len().max())
     raise Exception('Unhandled dtype: {}, type is {}'.format(dtype, type(dtype)))
 
