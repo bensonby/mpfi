@@ -142,7 +142,7 @@ df = mpfi.load('C123456', ['HK', '201912']) # a pandas DataFrame object
 ### Loading multiple model point files in a folder
 
 ```python
-mpfi.load_all(containing_text, file_pattern=None)
+mpfi.load_all(containing_text, file_pattern=None, folder=None, read_csv_options={})
 ```
 
 The product code itself will be inserted to the DataFrame with column name specified in the config (default is `_PROD_NAME`)
@@ -160,6 +160,11 @@ df = mpfi.load_all('201912')
 # load all C*.rpt in the first MPF folder containing both HK and 201912
 # Note that the config extension is ignored when a specific file pattern is provided
 df = mpfi.load_all(['201912', 'HK'], 'C*.rpt')
+
+# load all C*.rpt in the folder 'data'
+# This is a temp fix thus API will likely be changed
+# trailing slash is required for the optional folder argument
+df = mpfi.load_all(None, 'C*.rpt', folder='data/')
 ```
 
 ### Loading .fac TABLE files

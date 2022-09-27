@@ -72,22 +72,24 @@ def _read_fac(full_filename, read_csv_options={}):
     }
     return pd.read_csv(full_filename, **options).dropna(how='all')
 
-def load_all(containing_text, file_pattern=None, read_csv_options={}):
+def load_all(containing_text, file_pattern=None, folder=None, read_csv_options={}):
     config = _load_config()
     if file_pattern is None:
         file_pattern = '*.' + config['MPF_EXTENSION']
-    folder_name = None
-    for folder in config['MPF_FOLDERS']:
-        if containing_text is not None:
-            if type(containing_text) is list:
-                str_list = containing_text
-            else:
-                str_list = [containing_text]
-            not_found = [1 for s in str_list if folder.find(s) == -1]
-            if len(not_found) > 0:
-                continue
-            folder_name = folder
-            break
+
+    folder_name = folder
+    if folder_name is None:
+        for folder in config['MPF_FOLDERS']:
+            if containing_text is not None:
+                if type(containing_text) is list:
+                    str_list = containing_text
+                else:
+                    str_list = [containing_text]
+                not_found = [1 for s in str_list if folder.find(s) == -1]
+                if len(not_found) > 0:
+                    continue
+                folder_name = folder
+                break
     if folder_name is None:
         print('No folder matching the criteria is found. Your criteria:')
         print(containing_text)
