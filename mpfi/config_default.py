@@ -30,17 +30,6 @@ default_config = {
         # column types are specified in the line above the headers in MPF
         # T for string, N for number, I for integer
         '!': pd.CategoricalDtype(['*']), # keep this line! as 1st column and for dropna to work
-        'SPCODE': pd.Int32Dtype(),
-        'POLICY_NUMBER': 'string',
-        'PLAN_CODE': 'string',
-        'AGE_AT_ENTRY': pd.Int32Dtype(),
-        'DURATIONIF_M': pd.Int32Dtype(),
-        'EFF_YEAR': pd.Int32Dtype(),
-        'EFF_MONTH': pd.Int32Dtype(),
-        'EFF_DAY': pd.Int32Dtype(),
-        'POL_TERM_Y': pd.Int32Dtype(),
-        'PREM_FREQ': pd.Int32Dtype(),
-        'PREM_PAYBL_M': pd.Int32Dtype(),
     },
 
     'MPF_INDEX_COLUMNS': [
@@ -80,17 +69,6 @@ config = {
         # column types are specified in the line above the headers in MPF
         # T for string, N for number, I for integer
         '!': pd.CategoricalDtype(['*']), # keep this line! as 1st column and for dropna to work
-        'SPCODE': pd.Int32Dtype(),
-        'POLICY_NUMBER': 'string',
-        'PLAN_CODE': 'string',
-        'AGE_AT_ENTRY': pd.Int32Dtype(),
-        'DURATIONIF_M': pd.Int32Dtype(),
-        'EFF_YEAR': pd.Int32Dtype(),
-        'EFF_MONTH': pd.Int32Dtype(),
-        'EFF_DAY': pd.Int32Dtype(),
-        'POL_TERM_Y': pd.Int32Dtype(),
-        'PREM_FREQ': pd.Int32Dtype(),
-        'PREM_PAYBL_M': pd.Int32Dtype(),
     },
 
     'MPF_INDEX_COLUMNS': [
