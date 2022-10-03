@@ -28,35 +28,28 @@ def find_fac_header_row(filename):
 def mpf_meta(filename):
     result = {
         'header_row': -1,
-        'rows': -1,
+        'rows': 0,
         'column_specs': None,
     }
     variable_types = None
-    n = 0
     numlines = -1
+    current_line = -1
     with open(filename, 'r', encoding='latin-1') as f:
         for line in f:
+            current_line = current_line + 1
             matching_numlines = re.match(r"^NUMLINES,[\s]*([\d]+)", line)
             matching_formats = re.match(r"^VARIABLE_TYPES,", line)
             if matching_numlines is not None:
                 numlines = int(matching_numlines[1])
             elif matching_formats is not None:
                 variable_types = line.split(',')[1:] # first column is VARIABLE_TYPES, not used
-            elif line[0] == '!':
-                result['header_row'] = n # zero-based
+            elif line[0] == '!' or line[0] == '&':
+                result['header_row'] = current_line # zero-based
                 variable_names = line.split(',')
-                break
-            n += 1
-        for line in f:
-            if line[0] != '*':
-                result['rows'] = n - result['header_row']
-                break
-            else:
-                n += 1
-        if result['rows'] == -1:
-            result['rows'] = n - result['header_row'] + 1
+            elif line[0] == '*':
+                result['rows'] = result['rows'] + 1
 
-    if result['header_row'] == -1 or result['rows'] == -1:
+    if result['header_row'] == -1 or result['rows'] == 0:
         print('Malformed model point file format in: ' + filename)
         raise ValueError
 

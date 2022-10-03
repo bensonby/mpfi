@@ -167,6 +167,10 @@ df = mpfi.load_all(['201912', 'HK'], 'C*.rpt')
 df = mpfi.load_all(None, 'C*.rpt', folder='data/')
 ```
 
+### Loading individual model point result files
+
+You can use the same MPF-loading function to load the individual model point result files.
+
 ### Loading .fac TABLE files
 
 Sometimes you need to load some `.fac` file as used for DCS/Prophet for extra mapping.

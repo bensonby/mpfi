@@ -28,8 +28,9 @@ default_config = {
     'MPF_COLUMN_SPECS': {
         # these will be used to override any column types specified in the MPF
         # column types are specified in the line above the headers in MPF
-        # T for string, N for number, I for integer
-        '!': pd.CategoricalDtype(['*']), # keep this line! as 1st column and for dropna to work
+        # T for string, N for number, I for integer, S for short int
+        '!': pd.CategoricalDtype(['*']), # For model point file
+        '&': pd.CategoricalDtype(['*']), # For result file
     },
 
     'MPF_INDEX_COLUMNS': [
@@ -67,8 +68,9 @@ config = {
     'MPF_COLUMN_SPECS': {
         # these will be used to override any column types specified in the MPF
         # column types are specified in the line above the headers in MPF
-        # T for string, N for number, I for integer
-        '!': pd.CategoricalDtype(['*']), # keep this line! as 1st column and for dropna to work
+        # T for string, N for number, I for integer, S for short int
+        '!': pd.CategoricalDtype(['*']), # For model point file
+        '&': pd.CategoricalDtype(['*']), # For result file
     },
 
     'MPF_INDEX_COLUMNS': [
