@@ -24,6 +24,8 @@ def _get_mpf_columns(df, opt, config):
 
 def _to_prophet_type(dtype, series):
     dtype_str = str(dtype).lower()
+    if dtype_str in ['int16']:
+        return 'S'
     if dtype_str in ['int', 'int32', 'int64']:
         return 'I'
     if dtype_str in ['float', 'float64']:

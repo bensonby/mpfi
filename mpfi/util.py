@@ -75,6 +75,7 @@ def mpf_meta(filename):
                     'V': pd.CategoricalDtype(['*']), # for ! column with VARIABLE_TYPES
                     'T': np.dtype('str'),
                     'I': pd.Int32Dtype(),
+                    'S': pd.Int16Dtype(),
                     'N': np.float64,
                 }[variable_types[i][0]],
             ) for i in range(0, len(variable_types))
