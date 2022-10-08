@@ -76,7 +76,7 @@ def export(data, folder, options={}, to_csv_options={}):
                 out_lines.append(f'VARIABLE_TYPES,{types}')
             out_lines.append(','.join(mpf_columns))
             data_lines = _remove_asterisk_quotes(
-                rows.sort_values(['SPCODE']).to_csv(**to_csv_opt)
+                rows.sort_values(['SPCODE'], kind='mergesort').to_csv(**to_csv_opt)
             )
             out_lines.append(data_lines)
 
