@@ -34,6 +34,7 @@ def mpf_meta(filename):
     variable_types = None
     numlines = -1
     current_line = -1
+    passed_content = False
     with open(filename, 'r', encoding='latin-1') as f:
         for line in f:
             current_line = current_line + 1
@@ -43,10 +44,11 @@ def mpf_meta(filename):
                 numlines = int(matching_numlines[1])
             elif matching_formats is not None:
                 variable_types = line.split(',')[1:] # first column is VARIABLE_TYPES, not used
-            elif line[0] == '!' or line[0] == '&':
+            elif not passed_content and (line[0] == '!' or line[0] == '&'):
                 result['header_row'] = current_line # zero-based
                 variable_names = line.split(',')
             elif line[0] == '*':
+                passed_content = True
                 result['rows'] = result['rows'] + 1
 
     if result['header_row'] == -1 or result['rows'] == 0:
