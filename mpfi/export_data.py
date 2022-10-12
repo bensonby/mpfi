@@ -43,6 +43,7 @@ def export(data, folder, options={}, to_csv_options={}):
         'write_header': True,
         'include_columns': [],
         'exclude_columns': [],
+        'output_format': 'mpfi',
     }
     opt = {**default_options, **options}
     config = _load_config()
@@ -70,7 +71,7 @@ def export(data, folder, options={}, to_csv_options={}):
         for prod_name, rows in df.groupby(config['PROD_NAME_COLUMN']):
             out_lines = []
             if opt['write_header']:
-                out_lines.append('OUTPUT_FORMAT, mpfi')
+                out_lines.append(f'OUTPUT_FORMAT, {opt["output_format"]}')
                 out_lines.append(f'NUMLINES, {len(rows)}')
                 types = ','.join(column_types)
                 out_lines.append(f'VARIABLE_TYPES,{types}')

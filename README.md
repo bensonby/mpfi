@@ -66,6 +66,8 @@ mpfi.export(df, 'all-model-points', {
     'write_header': False,
     'include_columns': ['_FILE_NAME'],
     'exclude_columns': ['SPCODE', 'AGE_AT_ENTRY'],
+    // the OUTPUT_FORMAT header line, default is mpfi
+    'output_format': 'FORMAT_C',
 })
 ```
 
