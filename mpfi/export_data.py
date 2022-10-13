@@ -31,7 +31,8 @@ def _to_prophet_type(dtype, series):
     if dtype_str in ['float', 'float64']:
         return 'N'
     if dtype_str in ['str', 'string', 'category', 'object']:
-        return 'T{}'.format(series.str.len().max())
+        length = int(series.str.len().max())
+        return f'T{length}'
     raise Exception('Unhandled dtype: {}, type is {}'.format(dtype, type(dtype)))
 
 def _get_column_types(df, column_names):
