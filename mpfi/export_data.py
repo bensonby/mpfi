@@ -22,7 +22,7 @@ def _get_mpf_columns(df, opt, config):
     columns = [c for c in columns if c not in opt['exclude_columns']]
     return columns
 
-def _to_prophet_type(dtype, series):
+def _to_prophet_type(dtype, series, date_format):
     dtype_str = str(dtype).lower()
     if dtype_str in ['int16']:
         return 'S'
@@ -33,10 +33,12 @@ def _to_prophet_type(dtype, series):
     if dtype_str in ['str', 'string', 'category', 'object']:
         length = int(series.str.len().max())
         return f'T{length}'
+    if dtype_str in ['datetime64[ns]']:
+        return f'D{date_format}'
     raise Exception('Unhandled dtype: {}, type is {}'.format(dtype, type(dtype)))
 
-def _get_column_types(df, column_names):
-    return [_to_prophet_type(df[c].dtype, df[c]) for c in column_names]
+def _get_column_types(df, column_names, date_format):
+    return [_to_prophet_type(df[c].dtype, df[c], date_format) for c in column_names]
 
 def export(data, folder, options={}, to_csv_options={}):
     default_options = {
@@ -50,7 +52,6 @@ def export(data, folder, options={}, to_csv_options={}):
     config = _load_config()
     df = data.reset_index()
     mpf_columns = _get_mpf_columns(df, opt, config)
-    column_types = _get_column_types(df, mpf_columns)
 
     to_csv_opt = {
         'index': False,
@@ -58,8 +59,11 @@ def export(data, folder, options={}, to_csv_options={}):
         'lineterminator': '\n',
         'header': False,
         'quoting': csv.QUOTE_NONNUMERIC,
+        'date_format': '%m/%d/%Y',
         **to_csv_options,
     }
+
+    column_types = _get_column_types(df, mpf_columns, to_csv_opt['date_format'])
 
     if opt['split_into_prod']:
         try_folder = Path(folder)

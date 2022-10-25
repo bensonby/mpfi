@@ -30,6 +30,7 @@ def mpf_meta(filename):
         'header_row': -1,
         'rows': 0,
         'column_specs': None,
+        'date_columns': [],
     }
     variable_types = None
     numlines = -1
@@ -43,10 +44,10 @@ def mpf_meta(filename):
             if matching_numlines is not None:
                 numlines = int(matching_numlines[1])
             elif matching_formats is not None:
-                variable_types = line.split(',')[1:] # first column is VARIABLE_TYPES, not used
+                variable_types = line.strip().split(',')[1:] # first column is VARIABLE_TYPES, not used
             elif not passed_content and (line[0] == '!' or line[0] == '&'):
                 result['header_row'] = current_line # zero-based
-                variable_names = line.split(',')
+                variable_names = line.strip().split(',')
             elif line[0] == '*':
                 passed_content = True
                 result['rows'] = result['rows'] + 1
@@ -74,5 +75,11 @@ def mpf_meta(filename):
                     'N': np.float64,
                 }[variable_types[i][0]],
             ) for i in range(0, len(variable_types))
+            if variable_types[i][0] != 'D'
         ])
+        result['date_columns'] = [
+            variable_names[i]
+            for i in range(0, len(variable_types))
+            if variable_types[i][0] == 'D'
+        ]
     return result

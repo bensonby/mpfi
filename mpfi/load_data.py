@@ -45,6 +45,8 @@ def _read_single_mpf(config, full_filename, prod_name, read_csv_options={}):
         'encoding': 'latin-1', # to prevent error while reading garbage footer lines
         'on_bad_lines': 'warn',
         'nrows': meta['rows'],
+        'parse_dates': meta['date_columns'],
+        'infer_datetime_format': True,
         **read_csv_options,
     }
     return pd.read_csv(full_filename, **options).dropna(how='all').assign(**{
