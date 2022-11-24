@@ -29,7 +29,7 @@ def mpf_meta(filename):
     result = {
         'header_row': -1,
         'rows': 0,
-        'column_specs': None,
+        'column_specs': {},
         'date_columns': [],
     }
     variable_types = None
