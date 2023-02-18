@@ -25,7 +25,7 @@ def find_fac_header_row(filename):
                 return result
             result += 1
 
-def mpf_meta(filename):
+def get_meta(filename):
     result = {
         'header_row': -1,
         'rows': 0,

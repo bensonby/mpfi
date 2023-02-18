@@ -4,7 +4,7 @@ import importlib.util
 import pandas as pd
 from .util import (
     find_fac_header_row,
-    mpf_meta,
+    get_meta,
 )
 from .config_default import (
     default_config,
@@ -37,7 +37,7 @@ def _get_files_from_folder(folder, file_pattern):
     return [Path(p) for p in glob(folder + file_pattern)]
 
 def _read_single_mpf(config, full_filename, prod_name, read_csv_options={}):
-    meta = mpf_meta(full_filename)
+    meta = get_meta(full_filename)
     options = {
         'skiprows': meta['header_row'],
         'dtype': {**meta['column_specs'], **config['MPF_COLUMN_SPECS']},
@@ -56,9 +56,10 @@ def _read_single_mpf(config, full_filename, prod_name, read_csv_options={}):
 
 def _read_fac(full_filename, read_csv_options={}):
     header_row = find_fac_header_row(full_filename)
+    meta = get_meta(full_filename)
     options = {
         'encoding': 'latin-1', # There are some strange characters in the start of .fac files..
-        'skiprows': header_row,
+        'skiprows': meta['header_row'],
         'nrows': 1,
         **read_csv_options,
     }
@@ -66,10 +67,13 @@ def _read_fac(full_filename, read_csv_options={}):
     first_column_type = {cols[0]: pd.CategoricalDtype(['*'])}
     key_column_count = int(cols[0][1:])
     options = {
+        # No column spec for .fac files
         'encoding': 'latin-1', # There are some strange characters in the start of .fac files..
-        'skiprows': header_row,
+        'skiprows': meta['header_row'],
         'dtype': first_column_type,
         'index_col': list(range(1, key_column_count)),
+        'on_bad_lines': 'warn',
+        'nrows': meta['rows'],
         **read_csv_options,
     }
     return pd.read_csv(full_filename, **options).dropna(how='all')
