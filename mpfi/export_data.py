@@ -2,6 +2,7 @@ import os
 import re
 import csv
 from pathlib import Path
+import pandas as pd
 import numpy as np
 from .constants import (
     PROD_NAME_COLUMN,
@@ -35,7 +36,7 @@ def _to_prophet_type(dtype, series, date_format):
     if dtype_str in ['float', 'float64']:
         return 'N'
     if dtype_str in ['str', 'string', 'category', 'object']:
-        length = int(series.str.len().max())
+        length = int(series.str.len().astype(pd.Int64Dtype()).fillna(1).max())
         return f'T{length}'
     if dtype_str in ['datetime64[ns]']:
         return f'D{date_format}'
