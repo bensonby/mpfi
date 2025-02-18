@@ -1,0 +1,2 @@
+PROD_NAME_COLUMN = '_PROD_NAME'
+EXTENSION_COLUMN = '_EXTENSION' # including the dot

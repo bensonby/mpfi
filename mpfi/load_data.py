@@ -6,6 +6,10 @@ from .util import (
     find_fac_header_row,
     get_meta,
 )
+from .constants import (
+    PROD_NAME_COLUMN,
+    EXTENSION_COLUMN,
+)
 from .config_default import (
     default_config,
     default_config_str,
@@ -111,6 +115,13 @@ def load_all(containing_text, file_pattern=None, folder=None, read_csv_options={
     concatenated_df = pd.concat(df_from_each_file, ignore_index=True)
     return concatenated_df
 
+def load_mpf(file_pattern):
+    files = [Path(p) for p in glob(file_pattern)]
+    if len(files) == 0:
+        print('No model point files found in: {file_pattern}')
+        return None
+    dfs = [_read_single_mpf(config, str(f), f.stem, read_csv_options) for f in files]
+
 '''
 filename: allow either with .PRO or without; extension defined in mpfi-config.py
 folder: to be read from .env
@@ -148,23 +159,36 @@ def load(filename, containing_text=None, folder=None, read_csv_options={}):
     print(config['MPF_FOLDERS'])
     return None
 
-def load_fac(filename, folder=None, read_csv_options={}):
-    config = _load_config()
-    if filename.find('.' + config['FAC_EXTENSION']) == -1:
-        filename = filename + '.' + config['FAC_EXTENSION']
+def load_fac(filename, read_csv_options={}):
+    try_file = Path(filename)
+    if not try_file.exists() or try_file.is_dir():
+        print('fac file not found: {}'.format(filename))
+        return None
+    print('Reading from {}'.format(filename))
+    return _read_fac(filename, read_csv_options)
 
-    if folder is not None:
-        full_filename = PurePath(folder, filename)
-        return _read_fac(full_filename, read_csv_options)
 
-    for folder in config['FAC_FOLDERS']:
-        full_filename = PurePath(folder, filename)
-        try_file = Path(full_filename)
-        if try_file.exists() and not try_file.is_dir():
-            print('Reading from {}'.format(full_filename))
-            return _read_fac(full_filename, read_csv_options)
+def _read_mpf(path, read_csv_options={}):
+    meta = get_meta(path)
+    options = {
+        'skiprows': meta['header_row'],
+        'encoding': 'utf-8',
+        'encoding_errors': 'ignore', # to prevent error while reading garbage footer
+        'nrows': meta['rows'],
+        'parse_dates': meta['date_columns'],
+        **read_csv_options,
+        'dtype': meta['column_specs'] | read_csv_options.get('dtype', {}),
+    }
+    return pd.read_csv(path, **options).dropna(how='all').assign(**{
+        PROD_NAME_COLUMN: path.stem,
+        EXTENSION_COLUMN: path.suffix,
+    })
 
-    print('fac file not found: {}'.format(filename))
-    print('Folders available (defined in mpfi-config.py): ')
-    print(config['FAC_FOLDERS'])
-    return None
+def load_mpf(file_pattern, read_csv_options={}):
+    files = [Path(p) for p in glob(file_pattern)]
+    if len(files) == 0:
+        return pd.DataFrame()
+    return pd.concat([
+        _read_mpf(f, read_csv_options)
+        for f in files
+    ], ignore_index=True)
