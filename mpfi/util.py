@@ -60,26 +60,30 @@ def get_meta(filename):
         print('Warning: actual lines loaded ({}) different from NUMLINES shown in model point ({}) in: {}'.format(result['rows'], numlines, filename))
 
     # set formats
-    if variable_types is not None:
-        if len(variable_types) != len(variable_names):
-            print('Malformed model point file (variable_types) -- number of columns not matched')
-            raise ValueError
-        result['column_specs'] = dict([
-            (
-                variable_names[i],
-                {
-                    'V': pd.CategoricalDtype(['*']), # for ! column with VARIABLE_TYPES
-                    'T': np.dtype('str'),
-                    'I': pd.Int32Dtype(),
-                    'S': pd.Int16Dtype(),
-                    'N': np.float64,
-                }[variable_types[i][0]],
-            ) for i in range(0, len(variable_types))
-            if variable_types[i][0] != 'D'
-        ])
-        result['date_columns'] = [
-            variable_names[i]
-            for i in range(0, len(variable_types))
-            if variable_types[i][0] == 'D'
-        ]
+    if variable_types is None:
+        print('Warning: Row of variable types is not found. Data types will be automatically assigned by pandas')
+        return result
+
+    if len(variable_types) != len(variable_names):
+        print('Warning: Malformed model point file (variable_types) -- number of columns not matched. Data types will be automatically assigned by pandas')
+        return result
+
+    result['column_specs'] = dict([
+        (
+            variable_names[i],
+            {
+                'V': pd.CategoricalDtype(['*']), # for ! column with VARIABLE_TYPES
+                'T': np.dtype('str'),
+                'I': pd.Int32Dtype(),
+                'S': pd.Int16Dtype(),
+                'N': np.float64,
+            }[variable_types[i][0]],
+        ) for i in range(0, len(variable_types))
+        if variable_types[i][0] != 'D'
+    ])
+    result['date_columns'] = [
+        variable_names[i]
+        for i in range(0, len(variable_types))
+        if variable_types[i][0] == 'D'
+    ]
     return result
