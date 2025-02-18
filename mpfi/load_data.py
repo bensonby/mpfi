@@ -28,6 +28,7 @@ def _load_config():
     return default_config
 
 def generate_config():
+    print('Warning: config file will be deprecated in the next release.')
     # TODO: check if file exist
     try_file = Path('mpfi-config.py')
     if try_file.exists():
@@ -83,6 +84,7 @@ def _read_fac(full_filename, read_csv_options={}):
     return pd.read_csv(full_filename, **options).dropna(how='all')
 
 def load_all(containing_text, file_pattern=None, folder=None, read_csv_options={}):
+    print('Warning: this function will be deprecated in the next release. Please switch to `load_mpf` instead.')
     config = _load_config()
     if file_pattern is None:
         file_pattern = '*.' + config['MPF_EXTENSION']
@@ -127,6 +129,7 @@ filename: allow either with .PRO or without; extension defined in mpfi-config.py
 folder: to be read from .env
 '''
 def load(filename, containing_text=None, folder=None, read_csv_options={}):
+    print('Warning: this function will be deprecated in the next release. Please switch to `load_mpf` instead.')
     config = _load_config()
     ext_pos = filename.find('.' + config['MPF_EXTENSION'])
     if ext_pos > -1: # has extension specified

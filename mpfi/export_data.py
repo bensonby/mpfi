@@ -45,6 +45,7 @@ def _get_column_types(df, column_names, date_format):
     return [_to_prophet_type(df[c].dtype, df[c], date_format) for c in column_names]
 
 def export(data, folder, options={}, to_csv_options={}):
+    print('Warning: this function will be deprecated in the next release. Please switch to `export_mpf` instead.')
     default_options = {
         'split_into_prod': True,
         'write_header': True,
