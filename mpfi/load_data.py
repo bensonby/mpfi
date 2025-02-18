@@ -117,13 +117,6 @@ def load_all(containing_text, file_pattern=None, folder=None, read_csv_options={
     concatenated_df = pd.concat(df_from_each_file, ignore_index=True)
     return concatenated_df
 
-def load_mpf(file_pattern):
-    files = [Path(p) for p in glob(file_pattern)]
-    if len(files) == 0:
-        print('No model point files found in: {file_pattern}')
-        return None
-    dfs = [_read_single_mpf(config, str(f), f.stem, read_csv_options) for f in files]
-
 '''
 filename: allow either with .PRO or without; extension defined in mpfi-config.py
 folder: to be read from .env
