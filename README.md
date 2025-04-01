@@ -52,7 +52,7 @@ mpfi.export_mpf(df, 'output2/')
 
 # Trailing slash or backslash is optional for folder name
 # By default, only all columns with name starting with a Capital letter is outputted
-mpfi.export(df, 'all-model-points/', {
+mpfi.export_mpf(df, 'all-model-points/', {
     'include_columns': ['_FILE_NAME'],
     'exclude_columns': ['SPCODE', 'AGE_AT_ENTRY'],
     # the OUTPUT_FORMAT header line, default is mpfi
@@ -89,7 +89,7 @@ df[df['POL_NUMBER'] == '12345678'][['SPCODE', 'SUM_ASSURED']]
 
 # PREM_FREQ is 1 and plan code is either ABC or DEF
 # The bracket is important here due to order of precedence for & or |
-df[(df['PREM_FREQ'] == 1) & (df.PLAN_CODE.isin(['ABC', 'DEF']))]
+df[(df['PREM_FREQ'] == 1) & (df['PLAN_CODE'].isin(['ABC', 'DEF']))]
 
 # PREM_FREQ is 1 or EFF_YEAR is 2010
 # The bracket is important here due to order of precedence for & or |
